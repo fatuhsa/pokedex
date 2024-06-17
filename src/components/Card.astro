@@ -1,0 +1,24 @@
+---
+const Card = Astro.props
+---
+
+<div class="grid grid-cols-2 gap-2 place-items-center p-1">
+      {results.map((pokemon, index) => (
+          <a key={index} class="bg-gray-100 text-center">
+              <div>
+                  <h3>#{index + 1}</h3>
+                  <figure>
+                      <image 
+                          src={import.meta.env.PUBLIC_IMG_URL + pokemon.url.slice(34).replace("/", "") + ".png"}
+                          alt="pokemon" 
+                          width={170} 
+                          height={170} 
+                        />
+                  </figure>
+                  <div>
+                      <p>{pokemon.name}</p>
+                  </div>
+              </div>
+          </a>
+      ))}
+    </div>

@@ -1,0 +1,23 @@
+---
+import { Image } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+
+const { slug } = Astro.params;
+
+const res = await fetch(`${import.meta.env.PUBLIC_BASE_URL} + /${slug}`);
+const pokemon = await res.json();
+
+export const prerender = false
+---
+
+<Layout title={pokemon.name}>
+  <div>
+    <h3 class="float-left p-2 bg-red-400 rounded-br-2xl text-lime-100">#{index + 1}</h3>
+    <figure>
+      <Image src={`${import.meta.env.PUBLIC_IMG_URL}${pokemon.url.slice(34).replace("/", "")}.png`} alt={pokemon.name} width={170} height={170} />
+    </figure>
+    <div>
+      <p class="py-2 bg-red-400 text-lime-100">{pokemon.name.charAt(0).toUpperCase() + pokemon.name.substring(1)}</p>
+    </div>
+  </div>
+</Layout>

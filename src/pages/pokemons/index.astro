@@ -1,0 +1,79 @@
+---
+import Layout from "../../layouts/Layout.astro"
+
+let limit = 20;
+let results = [];
+
+const fetchData = async () => {
+  const res = await fetch(`${import.meta.env.PUBLIC_BASE_URL}?limit=${limit}`);
+  const data = await res.json();
+  results = data.results;
+}
+
+await fetchData();
+---
+
+<Layout title="Pokemons">
+  <div id="pokemon-container" class="grid grid-cols-2 gap-2 place-items-center p-2">
+    {results.map((pokemon, index) => (
+      <a href=`/pokemons/${pokemon.name}` key={index} class="bg-lime-300 rounded text-center">
+        <div>
+          <h3 class="float-left p-2 bg-red-400 rounded-br-2xl text-lime-100">#{index + 1}</h3>
+          <figure>
+            <img 
+              src={`${import.meta.env.PUBLIC_IMG_URL}${pokemon.url.slice(34).replace("/", "")}.png`}
+              alt={pokemon.name} 
+              width={170} 
+              height={170} 
+            />
+          </figure>
+          <div>
+            <p class="py-2 bg-red-400 text-lime-100">{pokemon.name.charAt(0).toUpperCase() + pokemon.name.substring(1)}</p>
+          </div>
+        </div>
+      </a>
+    ))}
+  </div>
+  <div class="flex justify-center items-center">
+    <button id="load-more" class="flex justify-center items-center bg-red-400 text-lime-100 w-2/4 rounded h-10 font-bold">Load More</button>
+  </div>
+
+  <script>
+    let currentOffset = 20; 
+
+    async function loadMore() {
+      const res = await fetch(`${import.meta.env.PUBLIC_BASE_URL}?offset=${currentOffset}&limit=20`);
+      const data = await res.json();
+      const newResults = data.results;
+
+      currentOffset += 20;
+
+      const container = document.getElementById('pokemon-container');
+      newResults.forEach((pokemon, index) => {
+        const card = document.createElement('a');
+        card.classList.add('bg-lime-300', 'rounded', 'text-center');
+        card.innerHTML = `
+          <div>
+            <h3 class="float-left p-2 bg-red-400 rounded-br-2xl text-lime-100">#${currentOffset - 20 + index + 1}</h3>
+            <figure>
+              <img 
+                src="${import.meta.env.PUBLIC_IMG_URL}${pokemon.url.slice(34).replace("/", "")}.png"
+                alt="${pokemon.name}" 
+                width="170" 
+                height="170" 
+              />
+            </figure>
+            <div>
+              <p class="py-2 bg-red-400 text-lime-100">${pokemon.name.charAt(0).toUpperCase() + pokemon.name.substring(1)}</p>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+      document.getElementById('load-more').addEventListener('click', loadMore);
+    });
+  </script>
+</Layout>
